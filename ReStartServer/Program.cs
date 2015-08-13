@@ -1,4 +1,4 @@
-﻿#define Dev
+﻿//#define Dev
 
 using System.ServiceProcess;
 namespace ReStartServer

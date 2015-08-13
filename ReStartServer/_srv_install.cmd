@@ -6,7 +6,7 @@ set binPath=%CD%
 echo "%binPath%\ReStartServer.exe"
 
 @echo 正在安装...(sc格式要求,=号前不能有空格,后面要有空格)
-sc create EPMCSService binPath= "%binPath%\ReStartServer.exe" displayname= "ReStartServer" start= "auto"
+sc create ReStartServer binPath= "%binPath%\ReStartServer.exe" displayname= "ReStartServer" start= "auto"
 
 sc description ReStartServer "用于客户电能表数据采集服务重始,如果此服务被禁用，将无法采集数据。" 
 

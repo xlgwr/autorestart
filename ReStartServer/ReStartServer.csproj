@@ -92,7 +92,10 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="_srv_start.cmd">
+    <None Include="_srv_net_stop.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="_srv_net_start.cmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="_srv_install.cmd">

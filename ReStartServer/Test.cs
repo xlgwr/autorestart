@@ -7,9 +7,7 @@ using log4net;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.Matchers;
-using System;
 using System.IO;
-using System.Text;
 
 
 using ReStartServer.job;
@@ -32,6 +30,8 @@ namespace ReStartServer
             logger.DebugFormat("开始重始服务 EPMCS.Service，【{0}】", Restart());
             logger.Debug("================================================================");
 
+            scheduler.Start();
+            logger.Info("Quartz服务成功启动");
 
             DateTimeOffset runTime = DateBuilder.EvenSecondDate(DateTimeOffset.Now);
 
