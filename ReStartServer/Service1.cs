@@ -29,7 +29,7 @@ namespace ReStartServer
         protected override void OnStart(string[] args)
         {
             logger.Debug("====================以下参数修改后需重启服务生效===================");
-            logger.DebugFormat("开始重始服务 EPMCS.Service，【{0}】", Restart());
+            logger.DebugFormat("开始重始服务 EPMCS.Service，每【{0}】分钟", Restart());
             logger.Debug("================================================================");
 
 
