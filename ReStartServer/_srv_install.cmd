@@ -18,4 +18,7 @@ sc description ReStartServer "ÓÃÓÚ¿Í»§µçÄÜ±íÊı¾İ²É¼¯·şÎñÖØÊ¼,Èç¹û´Ë·şÎñ±»½ûÓÃ£¬½
 @echo Ê¹ÓÃÃüÁî:  sc delete ReStartServer Ğ¶ÔØ·şÎñ
 @echo .
 @echo .
+
+net start ReStartServer
+
 @pause

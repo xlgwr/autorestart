@@ -11,6 +11,7 @@ using System.IO;
 
 
 using ReStartServer.job;
+using ReStartServer.DAL;
 
 namespace ReStartServer
 {
@@ -24,22 +25,25 @@ namespace ReStartServer
 
             scheduler = StdSchedulerFactory.GetDefaultScheduler();
         }
-        public void OnStart()
+
+        public void OnStart(string[] args)
         {
             logger.Debug("====================以下参数修改后需重启服务生效===================");
             Restart();
-            if (isStop <= 0)
+            if (Program.isStop <= 0)
             {
-                logger.Debug("**********************停止执行重始任务 EPMCS.Service");
-                logger.Error("**********************停止执行重始任务 EPMCS.Service");
+                logger.Debug("**********************时间设为：0，则停止执行重始任务 EPMCS.Service");
+                logger.Error("**********************时间设为：0，则停止执行重始任务 EPMCS.Service");
                 return;
             }
             else
             {
-                logger.DebugFormat("开始重始服务 EPMCS.Service，每【{0}】分钟", restart);
+                logger.DebugFormat("检查服务 EPMCS.Service，每【{0}】分钟", Program.restart);
+                logger.DebugFormat("开始重始服务 EPMCS.Service，每 >=【{0}】分钟", Program._diffMin);
 
             }
             logger.Debug("================================================================");
+
 
             scheduler.Start();
             logger.Info("Quartz服务成功启动");
@@ -47,21 +51,20 @@ namespace ReStartServer
             DateTimeOffset runTime = DateBuilder.EvenSecondDate(DateTimeOffset.Now);
 
             #region "Restart"
-
-            int RestartInterval = restart;
+            logger.Debug("===============================Restart=================================");
+            int RestartInterval = Program.restart;
             IJobDetail restart_Job = JobBuilder.Create<restartJob>()
                 .WithIdentity("ReStart_job", "ReStart_Group")
                  .Build();
 
             ITrigger restart_trigger = TriggerBuilder.Create()
-                .WithIdentity("ReStart_Trigger","ReStart_Group")
+                .WithIdentity("ReStart_Trigger", "ReStart_Group")
                 .StartAt(runTime)
-                .WithSimpleSchedule(x => x.WithIntervalInSeconds(RestartInterval).RepeatForever())
+                .WithSimpleSchedule(x => x.WithIntervalInMinutes(RestartInterval).RepeatForever())
                 .Build();
             scheduler.ScheduleJob(restart_Job, restart_trigger);
 
             #endregion "Restart"
-
         }
 
         public void OnStop()
@@ -71,41 +74,36 @@ namespace ReStartServer
                 scheduler.Shutdown();
                 logger.Info("Quartz服务成功终止");
             }
-            finally { }           
+            finally { }
         }
 
-        public void OnPause()
-        {
-            scheduler.PauseAll();
-        }
-
-        public void OnContinue()
-        {
-            scheduler.ResumeAll();
-        }
-
-        public static int restart = 0;
-        public static int isStop = 0;
         public static int Restart()
         {
-            if (restart <= 0)
+            if (Program.restart <= 0)
             {
-                string txt = System.Configuration.ConfigurationSettings.AppSettings.Get("restart");
-                if (!int.TryParse(txt, out restart))
+                string txt = System.Configuration.ConfigurationSettings.AppSettings.Get("restartFind");
+                string diffMin = System.Configuration.ConfigurationSettings.AppSettings.Get("restartMinDiff");
+
+                if (!int.TryParse(txt, out Program.restart))
                 {
-                    restart = 60; //默认60分钟
+                    Program.restart = 5; //默认5分钟
                 }
-                if (restart <= 0)
+                if (Program.restart <= 0)
                 {
-                    isStop = 0;
-                    restart = 5;
+                    Program.isStop = 0;
+                    Program.restart = 5;
                 }
                 else
                 {
-                    isStop = 1;
+                    if (!int.TryParse(diffMin, out Program._diffMin))
+                    {
+                        Program._diffMin = 5; //默认5分钟
+                    }
+                    Program.isStop = 1;
                 }
             }
-            return restart;
+
+            return Program.restart;
         }
     }
 }

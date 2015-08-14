@@ -30,7 +30,7 @@ namespace ReStartServer
         {
             logger.Debug("====================以下参数修改后需重启服务生效===================");
             Restart();
-            if (isStop <= 0)
+            if (Program.isStop <= 0)
             {
                 logger.Debug("**********************时间设为：0，则停止执行重始任务 EPMCS.Service");
                 logger.Error("**********************时间设为：0，则停止执行重始任务 EPMCS.Service");
@@ -38,7 +38,8 @@ namespace ReStartServer
             }
             else
             {
-                logger.DebugFormat("开始重始服务 EPMCS.Service，每【{0}】分钟", restart);
+                logger.DebugFormat("检查服务 EPMCS.Service，每【{0}】分钟", Program.restart);
+                logger.DebugFormat("开始重始服务 EPMCS.Service，每时间差 >=【{0}】分钟", Program._diffMin);
 
             }
             logger.Debug("================================================================");
@@ -51,7 +52,7 @@ namespace ReStartServer
 
             #region "Restart"
             logger.Debug("===============================Restart=================================");
-            int RestartInterval = restart;
+            int RestartInterval = Program.restart;
             IJobDetail restart_Job = JobBuilder.Create<restartJob>()
                 .WithIdentity("ReStart_job", "ReStart_Group")
                  .Build();
@@ -76,28 +77,33 @@ namespace ReStartServer
             finally { }
         }
 
-        public static int restart = 0;
-        public static int isStop = 0;
         public static int Restart()
         {
-            if (restart <= 0)
+            if (Program.restart <= 0)
             {
-                string txt = System.Configuration.ConfigurationSettings.AppSettings.Get("restart");
-                if (!int.TryParse(txt, out restart))
+                string txt = System.Configuration.ConfigurationSettings.AppSettings.Get("restartFind");
+                string diffMin = System.Configuration.ConfigurationSettings.AppSettings.Get("restartMinDiff");
+
+                if (!int.TryParse(txt, out Program.restart))
                 {
-                    restart = 60; //默认60分钟
+                    Program.restart = 5; //默认5分钟
                 }
-                if (restart <= 0)
+                if (Program.restart <= 0)
                 {
-                    isStop = 0;
-                    restart = 5;
+                    Program.isStop = 0;
+                    Program.restart = 5;
                 }
                 else
                 {
-                    isStop = 1;
+                    if (!int.TryParse(diffMin, out Program._diffMin))
+                    {
+                        Program._diffMin = 5; //默认5分钟
+                    }
+                    Program.isStop = 1;
                 }
             }
-            return restart;
+
+            return Program.restart;
         }
     }
 }

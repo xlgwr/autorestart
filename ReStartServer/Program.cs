@@ -17,6 +17,10 @@ namespace ReStartServer
 #else
     static class Program
     {
+
+        public static int restart = 0;
+        public static int isStop = 0;
+        public static int _diffMin = 0;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
